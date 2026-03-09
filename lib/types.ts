@@ -3,7 +3,7 @@ export type Priority = 'LOW' | 'MEDIUM' | 'HIGH';
 export type Role = 'ADMIN' | 'USER';
 
 export interface Task {
-  id: string;
+  id: number;
   title: string;
   description: string;
   status: Status;
@@ -11,6 +11,7 @@ export interface Task {
   dueDate: string;
   createdAt: string;
   updatedAt: string;
+  userId?: number;
 }
 
 export interface User {

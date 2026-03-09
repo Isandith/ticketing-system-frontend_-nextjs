@@ -1,5 +1,23 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Setup
+
+Create a local env file before running the app:
+
+```bash
+cp .env.example .env.local
+```
+
+Required variable:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
+```
+
+Notes:
+- `NEXT_PUBLIC_*` variables are exposed to the browser, so they are not private secrets.
+- Keep backend-only secrets (JWT signing keys, DB passwords) only in the Spring Boot backend env, not in this frontend.
+
 ## Getting Started
 
 First, run the development server:

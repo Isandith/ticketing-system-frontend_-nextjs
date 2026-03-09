@@ -2,6 +2,7 @@ import { Task, User } from './types';
 
 const USER_KEY = 'ticketing_user';
 const TASKS_KEY = 'ticketing_tasks';
+const ACCESS_TOKEN_KEY = 'ticketing_access_token';
 
 export const storage = {
   getUser(): User | null {
@@ -27,6 +28,31 @@ export const storage = {
     }
 
     window.localStorage.removeItem(USER_KEY);
+    window.localStorage.removeItem(ACCESS_TOKEN_KEY);
+  },
+
+  getAccessToken(): string {
+    if (typeof window === 'undefined') {
+      return '';
+    }
+
+    return window.localStorage.getItem(ACCESS_TOKEN_KEY) ?? '';
+  },
+
+  setAccessToken(token: string) {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.localStorage.setItem(ACCESS_TOKEN_KEY, token);
+  },
+
+  clearAccessToken() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.localStorage.removeItem(ACCESS_TOKEN_KEY);
   },
 
   getTasks(): Task[] {

@@ -1,0 +1,41 @@
+import axios, { AxiosError } from 'axios';
+import { storage } from '@/lib/storage';
+import { ApiErrorResponse } from '@/lib/Interfaces/authentication_Interface';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+if (!API_BASE_URL) {
+	throw new Error('Missing NEXT_PUBLIC_API_BASE_URL. Configure it in .env.local');
+}
+
+export const apiClient = axios.create({
+	baseURL: API_BASE_URL,
+	headers: {
+		'Content-Type': 'application/json',
+	},
+});
+
+apiClient.interceptors.request.use((config) => {
+	const token = storage.getAccessToken();
+	if (token && !config.headers.Authorization) {
+		config.headers.Authorization = token;
+	}
+	return config;
+});
+
+export function extractApiError(error: unknown): Error {
+	if (!axios.isAxiosError(error)) {
+		return new Error('Request failed');
+	}
+
+	const axiosError = error as AxiosError<ApiErrorResponse>;
+	const payload = axiosError.response?.data;
+	const message =
+		payload?.message ||
+		payload?.error ||
+		(payload?.details ? Object.values(payload.details).join(', ') : '') ||
+		axiosError.message ||
+		'Request failed';
+
+	return new Error(message);
+}

@@ -4,8 +4,8 @@ import { Task } from '@/lib/types';
 interface TaskCardProps {
   task: Task;
   onEdit: (task: Task) => void;
-  onDelete: (taskId: string) => void;
-  onMarkComplete: (taskId: string) => void;
+  onDelete: (taskId: number) => void;
+  onMarkComplete: (taskId: number) => void;
 }
 
 export default function TaskCard({
