@@ -10,6 +10,9 @@ import {
 
 const TASK_BASE_PATH = '/api/v1/tasks';
 
+/**
+ * Builds query string parameters for the task list endpoint.
+ */
 function buildQuery(params: TaskQueryParams): string {
 	const searchParams = new URLSearchParams();
 
@@ -25,6 +28,9 @@ function buildQuery(params: TaskQueryParams): string {
 	return queryString ? `?${queryString}` : '';
 }
 
+/**
+ * Creates a new task.
+ */
 export async function createTaskApi(payload: TaskRequest, bearerToken?: string): Promise<TaskResponse> {
 	try {
 		const response = await apiClient.post<TaskResponse>(TASK_BASE_PATH, payload, {
@@ -36,6 +42,9 @@ export async function createTaskApi(payload: TaskRequest, bearerToken?: string):
 	}
 }
 
+/**
+ * Updates an existing task by id.
+ */
 export async function updateTaskApi(taskId: TaskId, payload: TaskRequest, bearerToken?: string): Promise<TaskResponse> {
 	try {
 		const response = await apiClient.put<TaskResponse>(`${TASK_BASE_PATH}/${taskId}`, payload, {
@@ -47,6 +56,9 @@ export async function updateTaskApi(taskId: TaskId, payload: TaskRequest, bearer
 	}
 }
 
+/**
+ * Deletes a task by id.
+ */
 export async function deleteTaskApi(taskId: TaskId, bearerToken?: string): Promise<ApiMessageResponse> {
 	try {
 		const response = await apiClient.delete<ApiMessageResponse>(`${TASK_BASE_PATH}/${taskId}`, {
@@ -58,6 +70,9 @@ export async function deleteTaskApi(taskId: TaskId, bearerToken?: string): Promi
 	}
 }
 
+/**
+ * Returns a single task by id.
+ */
 export async function getTaskByIdApi(taskId: TaskId, bearerToken?: string): Promise<TaskResponse> {
 	try {
 		const response = await apiClient.get<TaskResponse>(`${TASK_BASE_PATH}/${taskId}`, {
@@ -69,6 +84,9 @@ export async function getTaskByIdApi(taskId: TaskId, bearerToken?: string): Prom
 	}
 }
 
+/**
+ * Returns a paginated list of tasks using supplied filters.
+ */
 export async function getTasksApi(params: TaskQueryParams, bearerToken?: string): Promise<PageResponse<TaskResponse>> {
 	try {
 		const response = await apiClient.get<PageResponse<TaskResponse>>(
@@ -81,6 +99,9 @@ export async function getTasksApi(params: TaskQueryParams, bearerToken?: string)
 	}
 }
 
+/**
+ * Marks a task as completed.
+ */
 export async function markTaskCompletedApi(taskId: TaskId, bearerToken?: string): Promise<TaskResponse> {
 	try {
 		const response = await apiClient.patch<TaskResponse>(`${TASK_BASE_PATH}/${taskId}/complete`, undefined, {

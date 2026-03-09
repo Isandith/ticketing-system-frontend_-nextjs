@@ -8,6 +8,9 @@ if (!API_BASE_URL) {
 	throw new Error('Missing NEXT_PUBLIC_API_BASE_URL. Configure it in .env.local');
 }
 
+/**
+ * Shared Axios client configured with base URL and JSON headers.
+ */
 export const apiClient = axios.create({
 	baseURL: API_BASE_URL,
 	headers: {
@@ -23,6 +26,9 @@ apiClient.interceptors.request.use((config) => {
 	return config;
 });
 
+/**
+ * Maps unknown API errors into a normalized Error instance for UI handling.
+ */
 export function extractApiError(error: unknown): Error {
 	if (!axios.isAxiosError(error)) {
 		return new Error('Request failed');

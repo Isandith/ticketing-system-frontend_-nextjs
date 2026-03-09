@@ -1,9 +1,11 @@
-import { Task, User } from './types';
+import { User } from './types';
 
 const USER_KEY = 'ticketing_user';
-const TASKS_KEY = 'ticketing_tasks';
 const ACCESS_TOKEN_KEY = 'ticketing_access_token';
 
+/**
+ * LocalStorage helper for persisting auth and task data in the browser.
+ */
 export const storage = {
   getUser(): User | null {
     if (typeof window === 'undefined') {
@@ -53,22 +55,5 @@ export const storage = {
     }
 
     window.localStorage.removeItem(ACCESS_TOKEN_KEY);
-  },
-
-  getTasks(): Task[] {
-    if (typeof window === 'undefined') {
-      return [];
-    }
-
-    const value = window.localStorage.getItem(TASKS_KEY);
-    return value ? (JSON.parse(value) as Task[]) : [];
-  },
-
-  setTasks(tasks: Task[]) {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    window.localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
   },
 };

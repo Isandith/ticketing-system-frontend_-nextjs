@@ -3,6 +3,9 @@ import { UserResponse } from '@/lib/Interfaces/user_Interface';
 
 const USER_BASE_PATH = '/api/v1/users';
 
+/**
+ * Returns all users visible to the current authenticated caller.
+ */
 export async function getAllUsersApi(bearerToken?: string): Promise<UserResponse[]> {
 	try {
 		const response = await apiClient.get<UserResponse[]>(USER_BASE_PATH, {

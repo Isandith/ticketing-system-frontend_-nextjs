@@ -2,6 +2,9 @@ import React from 'react';
 import { X } from 'lucide-react';
 import { Priority, Status, Task } from '@/lib/types';
 
+/**
+ * Props for the create/edit task modal form.
+ */
 interface TaskFormModalProps {
   isOpen: boolean;
   editingTask: Task | null;
@@ -9,6 +12,9 @@ interface TaskFormModalProps {
   onSave: (taskData: Partial<Task>) => void;
 }
 
+/**
+ * Modal form used for creating a new task or editing an existing one.
+ */
 export default function TaskFormModal({
   isOpen,
   editingTask,
@@ -26,7 +32,13 @@ export default function TaskFormModal({
           <h3 className="text-lg font-semibold text-gray-900">
             {editingTask ? 'Edit Task' : 'Create New Task'}
           </h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close task form modal"
+            title="Close"
+            className="text-gray-400 hover:text-gray-600"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -45,20 +57,24 @@ export default function TaskFormModal({
           className="p-6 space-y-4"
         >
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <label htmlFor="task-title" className="block text-sm font-medium text-gray-700 mb-1">Title</label>
             <input
+              id="task-title"
               required
               name="title"
+              title="Task title"
               defaultValue={editingTask?.title}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
               placeholder="Task title"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label htmlFor="task-description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <textarea
+              id="task-description"
               required
               name="description"
+              title="Task description"
               defaultValue={editingTask?.description}
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -67,9 +83,11 @@ export default function TaskFormModal({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <label htmlFor="task-status" className="block text-sm font-medium text-gray-700 mb-1">Status</label>
               <select
+                id="task-status"
                 name="status"
+                title="Task status"
                 defaultValue={editingTask?.status || 'TODO'}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
               >
@@ -79,9 +97,11 @@ export default function TaskFormModal({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+              <label htmlFor="task-priority" className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
               <select
+                id="task-priority"
                 name="priority"
+                title="Task priority"
                 defaultValue={editingTask?.priority || 'MEDIUM'}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
               >
@@ -92,11 +112,13 @@ export default function TaskFormModal({
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+            <label htmlFor="task-due-date" className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
             <input
+              id="task-due-date"
               required
               type="date"
               name="dueDate"
+              title="Task due date"
               defaultValue={editingTask?.dueDate ? new Date(editingTask.dueDate).toISOString().split('T')[0] : ''}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
             />

@@ -1,10 +1,16 @@
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { ToastState } from '@/lib/types';
 
+/**
+ * Props for transient feedback notifications.
+ */
 interface ToastProps {
   toast: ToastState | null;
 }
 
+/**
+ * Floating toast notification for success or error messages.
+ */
 export default function Toast({ toast }: ToastProps) {
   if (!toast) {
     return null;

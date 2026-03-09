@@ -11,6 +11,9 @@ import { login } from '@/lib/Services/authentication_Services';
 import { useAppDispatch } from '@/store/hooks';
 import { setCredentials } from '@/store/slices/authSlice';
 
+/**
+ * Login page that authenticates the user and stores credentials in Redux.
+ */
 export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();

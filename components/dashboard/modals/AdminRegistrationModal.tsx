@@ -1,6 +1,9 @@
 import React from 'react';
 import { AlertCircle, UserPlus, X } from 'lucide-react';
 
+/**
+ * Props for the admin registration modal form.
+ */
 interface AdminRegistrationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -8,6 +11,9 @@ interface AdminRegistrationModalProps {
   isSubmitting?: boolean;
 }
 
+/**
+ * Modal that allows an admin user to create another admin account.
+ */
 export default function AdminRegistrationModal({
   isOpen,
   onClose,
@@ -26,7 +32,13 @@ export default function AdminRegistrationModal({
             <UserPlus className="h-5 w-5 text-gray-700 mr-2" />
             <h3 className="text-lg font-semibold text-gray-900">Register New Admin</h3>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close admin registration modal"
+            title="Close"
+            className="text-gray-400 hover:text-gray-600"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>

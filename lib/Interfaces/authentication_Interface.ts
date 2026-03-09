@@ -1,10 +1,19 @@
+/**
+ * Supported backend roles used by authentication endpoints.
+ */
 export type Role = 'ADMIN' | 'USER';
 
+/**
+ * Credentials required for login.
+ */
 export interface LoginRequest {
 	username: string;
 	password: string;
 }
 
+/**
+ * Payload for user or admin registration.
+ */
 export interface RegisterRequest {
 	username: string;
 	email: string;
@@ -12,6 +21,9 @@ export interface RegisterRequest {
 	role?: Role | string;
 }
 
+/**
+ * Authentication response containing JWT information and user identity.
+ */
 export interface AuthResponse {
 	token: string;
 	tokenType: string;
@@ -19,6 +31,9 @@ export interface AuthResponse {
 	role: Role | string;
 }
 
+/**
+ * Standardized API error payload returned by backend error handlers.
+ */
 export interface ApiErrorResponse {
 	timestamp?: string;
 	status?: number;

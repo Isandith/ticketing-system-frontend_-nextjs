@@ -41,6 +41,9 @@ import {
   setSearchQuery,
 } from '@/store/slices/taskSlice';
 
+/**
+ * Main authenticated dashboard with task listing, filtering, pagination, and task actions.
+ */
 export default function DashboardPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -251,6 +254,8 @@ export default function DashboardPage() {
                 </div>
                 <button
                   onClick={handleLogout}
+                  aria-label="Log out"
+                  title="Log out"
                   className="text-gray-500 hover:text-red-600 transition-colors p-2 rounded-full hover:bg-red-50"
                 >
                   <LogOut className="h-5 w-5" />
@@ -348,6 +353,8 @@ export default function DashboardPage() {
                       dispatch(setCurrentPage(1));
                       dispatch(setUserFilter(e.target.value === 'ALL' ? 'ALL' : Number(e.target.value)));
                     }}
+                    aria-label="Filter tasks by user"
+                    title="Filter tasks by user"
                     className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                   >
                     <option value="ALL">All Users</option>
@@ -367,6 +374,8 @@ export default function DashboardPage() {
                     dispatch(setCurrentPage(1));
                     dispatch(setPriorityFilter(e.target.value as Priority | 'ALL'));
                   }}
+                  aria-label="Filter tasks by priority"
+                  title="Filter tasks by priority"
                   className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                 >
                   <option value="ALL">All Priorities</option>
@@ -383,6 +392,8 @@ export default function DashboardPage() {
                     dispatch(setCurrentPage(1));
                     dispatch(setStatusFilter(e.target.value as Status | 'ALL'));
                   }}
+                  aria-label="Filter tasks by status"
+                  title="Filter tasks by status"
                   className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                 >
                   <option value="ALL">All Statuses</option>
@@ -399,6 +410,8 @@ export default function DashboardPage() {
                     dispatch(setCurrentPage(1));
                     dispatch(setSortBy(e.target.value as 'DUE_DATE' | 'PRIORITY'));
                   }}
+                  aria-label="Sort tasks by field"
+                  title="Sort tasks by field"
                   className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                 >
                   <option value="DUE_DATE">Sort by Date</option>
@@ -413,6 +426,8 @@ export default function DashboardPage() {
                     dispatch(setCurrentPage(1));
                     dispatch(setSortDirection(e.target.value as 'asc' | 'desc'));
                   }}
+                  aria-label="Sort direction"
+                  title="Sort direction"
                   className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                 >
                   <option value="asc">Ascending</option>
@@ -476,6 +491,8 @@ export default function DashboardPage() {
                     dispatch(setCurrentPage(1));
                     dispatch(setPageSize(Number(e.target.value)));
                   }}
+                  aria-label="Tasks per page"
+                  title="Tasks per page"
                   className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                 >
                   <option value={5}>5 / page</option>

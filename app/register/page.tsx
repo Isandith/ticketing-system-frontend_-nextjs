@@ -9,6 +9,9 @@ import Toast from '@/components/ui/Toast';
 import { ToastState } from '@/lib/types';
 import { register } from '@/lib/Services/authentication_Services';
 
+/**
+ * Registration page for creating a new user account.
+ */
 export default function RegisterPage() {
   const router = useRouter();
   const [username, setUsername] = useState('');

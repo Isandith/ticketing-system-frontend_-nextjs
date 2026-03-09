@@ -1,6 +1,9 @@
 import { Check, CheckCircle2, Clock, Edit2, Trash2 } from 'lucide-react';
 import { Task } from '@/lib/types';
 
+/**
+ * Props for a single task card in the dashboard grid.
+ */
 interface TaskCardProps {
   task: Task;
   onEdit: (task: Task) => void;
@@ -8,6 +11,9 @@ interface TaskCardProps {
   onMarkComplete: (taskId: number) => void;
 }
 
+/**
+ * Visual card that renders one task with status badges and action buttons.
+ */
 export default function TaskCard({
   task,
   onEdit,

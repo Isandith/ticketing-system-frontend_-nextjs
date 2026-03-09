@@ -13,11 +13,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+/**
+ * Global application metadata used for document title and description.
+ */
 export const metadata: Metadata = {
   title: "Ticketing System",
   description: "Mini task and ticket management frontend",
 };
 
+/**
+ * Root layout that provides fonts, Redux store context, and shared page shell.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

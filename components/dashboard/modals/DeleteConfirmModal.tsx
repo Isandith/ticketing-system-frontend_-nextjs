@@ -1,11 +1,17 @@
 import { AlertCircle } from 'lucide-react';
 
+/**
+ * Props for the task deletion confirmation modal.
+ */
 interface DeleteConfirmModalProps {
   isOpen: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
+/**
+ * Modal dialog that asks users to confirm irreversible task deletion.
+ */
 export default function DeleteConfirmModal({
   isOpen,
   onCancel,
