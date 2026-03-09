@@ -5,12 +5,14 @@ interface AdminRegistrationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  isSubmitting?: boolean;
 }
 
 export default function AdminRegistrationModal({
   isOpen,
   onClose,
   onSubmit,
+  isSubmitting = false,
 }: AdminRegistrationModalProps) {
   if (!isOpen) {
     return null;
@@ -42,7 +44,7 @@ export default function AdminRegistrationModal({
               required
               name="username"
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
               placeholder="admin_username"
             />
           </div>
@@ -52,7 +54,7 @@ export default function AdminRegistrationModal({
               required
               name="email"
               type="email"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
               placeholder="admin@example.com"
             />
           </div>
@@ -62,7 +64,7 @@ export default function AdminRegistrationModal({
               required
               name="password"
               type="password"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
               placeholder="Secure password"
             />
           </div>
@@ -72,15 +74,17 @@ export default function AdminRegistrationModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              disabled={isSubmitting}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-60"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-black shadow-sm"
+              disabled={isSubmitting}
+              className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-black shadow-sm disabled:opacity-60"
             >
-              Create Admin Account
+              {isSubmitting ? 'Creating...' : 'Create Admin Account'}
             </button>
           </div>
         </form>

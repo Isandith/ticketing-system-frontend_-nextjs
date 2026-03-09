@@ -50,7 +50,7 @@ export default function TaskFormModal({
               required
               name="title"
               defaultValue={editingTask?.title}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
               placeholder="Task title"
             />
           </div>
@@ -61,7 +61,7 @@ export default function TaskFormModal({
               name="description"
               defaultValue={editingTask?.description}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
               placeholder="Task details..."
             />
           </div>
@@ -71,7 +71,7 @@ export default function TaskFormModal({
               <select
                 name="status"
                 defaultValue={editingTask?.status || 'TODO'}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
               >
                 <option value="TODO">To Do</option>
                 <option value="IN_PROGRESS">In Progress</option>
@@ -83,7 +83,7 @@ export default function TaskFormModal({
               <select
                 name="priority"
                 defaultValue={editingTask?.priority || 'MEDIUM'}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
               >
                 <option value="LOW">Low</option>
                 <option value="MEDIUM">Medium</option>
@@ -98,7 +98,7 @@ export default function TaskFormModal({
               type="date"
               name="dueDate"
               defaultValue={editingTask?.dueDate ? new Date(editingTask.dueDate).toISOString().split('T')[0] : ''}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
           <div className="pt-4 flex justify-end space-x-3">

@@ -20,35 +20,55 @@ import AdminRegistrationModal from '@/components/dashboard/modals/AdminRegistrat
 import DeleteConfirmModal from '@/components/dashboard/modals/DeleteConfirmModal';
 import TaskFormModal from '@/components/dashboard/modals/TaskFormModal';
 import Toast from '@/components/ui/Toast';
-import { Priority, Status, Task, ToastState, User } from '@/lib/types';
-import { storage } from '@/lib/storage';
+import { Priority, Status, Task, ToastState } from '@/lib/types';
+import { registerAdmin } from '@/lib/Services/authentication_Services';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { logout } from '@/store/slices/authSlice';
 import {
-  createTask,
-  deleteTask,
-  getTasks,
-  markTaskCompleted,
-  updateTask,
-} from '@/lib/Services/task_Services';
-import { TaskResponse } from '@/lib/Interfaces/task_Interface';
-import { getAllUsers } from '@/lib/Services/user_Services';
-import { UserResponse } from '@/lib/Interfaces/user_Interface';
+  fetchTasks,
+  fetchUsers,
+  createTask as createTaskThunk,
+  updateTask as updateTaskThunk,
+  deleteTask as deleteTaskThunk,
+  markTaskCompleted as markTaskCompletedThunk,
+  setCurrentPage,
+  setPageSize,
+  setStatusFilter,
+  setPriorityFilter,
+  setUserFilter,
+  setSortBy,
+  setSortDirection,
+  setSearchQuery,
+} from '@/store/slices/taskSlice';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const dispatch = useAppDispatch();
+  
+  // Redux state
+  const { user, isAuthenticated, accessToken } = useAppSelector((state) => state.auth);
+  const {
+    tasks,
+    users,
+    isLoading,
+    currentPage,
+    pageSize,
+    totalPages,
+    totalElements,
+    statusFilter,
+    priorityFilter,
+    userFilter,
+    sortBy,
+    sortDirection,
+    searchQuery,
+  } = useAppSelector((state) => state.tasks);
+
+  // Local state
   const [mounted, setMounted] = useState(false);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [users, setUsers] = useState<UserResponse[]>([]);
   const [toast, setToast] = useState<ToastState | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<Status | 'ALL'>('ALL');
-  const [userFilter, setUserFilter] = useState<number | 'ALL'>('ALL');
-  const [sortBy, setSortBy] = useState<'DUE_DATE' | 'PRIORITY'>('DUE_DATE');
-
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isAdminSubmitting, setIsAdminSubmitting] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deleteModalTaskId, setDeleteModalTaskId] = useState<number | null>(null);
 
@@ -57,106 +77,55 @@ export default function DashboardPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const mapTaskResponse = (taskResponse: TaskResponse): Task => ({
-    id: taskResponse.id,
-    title: taskResponse.title,
-    description: taskResponse.description,
-    status: taskResponse.status as Status,
-    priority: taskResponse.priority as Priority,
-    dueDate: taskResponse.dueDate,
-    createdAt: taskResponse.createdAt,
-    updatedAt: taskResponse.updatedAt,
-    userId: taskResponse.userId,
-  });
-
-  const fetchTasks = async () => {
-    try {
-      setIsLoading(true);
-      const response = await getTasks({
-        page: 0,
-        size: 100,
-        sortBy: 'dueDate',
-        sortDirection: 'asc',
-        userId: userFilter !== 'ALL' ? userFilter : undefined,
-      });
-      const mappedTasks = response.content.map(mapTaskResponse);
-      setTasks(mappedTasks);
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to load tasks', 'error');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const usersData = await getAllUsers();
-      setUsers(usersData);
-    } catch (error) {
-      // Silently fail if user doesn't have permission (likely not admin)
-      console.warn('Failed to fetch users:', error);
-    }
-  };
-
   useEffect(() => {
-    // Load user from localStorage only on client side to prevent hydration mismatch
-    const storedUser = storage.getUser();
-    setUser(storedUser);
     setMounted(true);
   }, []);
 
   useEffect(() => {
     if (!mounted) return;
     
-    if (!user) {
+    if (!isAuthenticated || !user) {
       router.replace('/login');
-    } else {
-      fetchTasks();
-      // Only fetch users if user is ADMIN (endpoint likely requires admin role)
-      if (user.role === 'ADMIN') {
-        fetchUsers();
-      }
+      return;
     }
-  }, [router, user, mounted]);
 
-  useEffect(() => {
-    if (user) {
-      fetchTasks();
+    // Fetch tasks when filters or pagination changes
+    dispatch(fetchTasks());
+    
+    // Fetch users if ADMIN
+    if (user.role === 'ADMIN') {
+      dispatch(fetchUsers());
     }
-  }, [userFilter]);
+  }, [
+    dispatch,
+    router,
+    user,
+    isAuthenticated,
+    mounted,
+    currentPage,
+    pageSize,
+    sortBy,
+    sortDirection,
+    statusFilter,
+    priorityFilter,
+    userFilter,
+  ]);
 
-  const filteredAndSortedTasks = useMemo(() => {
-    const result = [...tasks]
-      .filter((task) => {
-        if (!searchQuery) {
-          return true;
-        }
+  const filteredTasks = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return tasks;
+    }
 
-        const query = searchQuery.toLowerCase();
-        return (
-          task.title.toLowerCase().includes(query) ||
-          task.description.toLowerCase().includes(query)
-        );
-      })
-      .filter((task) => statusFilter === 'ALL' || task.status === statusFilter)
-      .sort((a, b) => {
-        if (sortBy === 'DUE_DATE') {
-          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-        }
-
-        const priorityWeight: Record<Priority, number> = {
-          HIGH: 3,
-          MEDIUM: 2,
-          LOW: 1,
-        };
-        return priorityWeight[b.priority] - priorityWeight[a.priority];
-      });
-
-    return result;
-  }, [tasks, searchQuery, sortBy, statusFilter]);
+    const query = searchQuery.toLowerCase();
+    return tasks.filter(
+      (task) =>
+        task.title.toLowerCase().includes(query) ||
+        task.description.toLowerCase().includes(query),
+    );
+  }, [tasks, searchQuery]);
 
   const stats = {
-    total: tasks.length,
+    total: totalElements,
     todo: tasks.filter((task) => task.status === 'TODO').length,
     inProgress: tasks.filter((task) => task.status === 'IN_PROGRESS').length,
     done: tasks.filter((task) => task.status === 'DONE').length,
@@ -165,24 +134,27 @@ export default function DashboardPage() {
   const handleSaveTask = async (taskData: Partial<Task>) => {
     try {
       if (editingTask) {
-        const updated = await updateTask(editingTask.id, {
-          title: taskData.title || editingTask.title,
-          description: taskData.description || editingTask.description,
-          status: taskData.status || editingTask.status,
-          priority: taskData.priority || editingTask.priority,
-          dueDate: taskData.dueDate || editingTask.dueDate,
-        });
-        setTasks(tasks.map((t) => (t.id === editingTask.id ? mapTaskResponse(updated) : t)));
+        await dispatch(updateTaskThunk({
+          taskId: editingTask.id,
+          taskData: {
+            title: taskData.title || editingTask.title,
+            description: taskData.description || editingTask.description,
+            status: taskData.status || editingTask.status,
+            priority: taskData.priority || editingTask.priority,
+            dueDate: taskData.dueDate || editingTask.dueDate,
+          },
+        })).unwrap();
+        await dispatch(fetchTasks());
         showToast('Task updated successfully');
       } else {
-        const created = await createTask({
+        await dispatch(createTaskThunk({
           title: taskData.title || '',
           description: taskData.description || '',
           status: taskData.status || 'TODO',
           priority: taskData.priority || 'MEDIUM',
           dueDate: taskData.dueDate || new Date().toISOString().split('T')[0],
-        });
-        setTasks([...tasks, mapTaskResponse(created)]);
+        })).unwrap();
+        await dispatch(fetchTasks());
         showToast('Task created successfully');
       }
       setIsFormModalOpen(false);
@@ -194,8 +166,8 @@ export default function DashboardPage() {
 
   const handleDeleteTask = async (taskId: number) => {
     try {
-      await deleteTask(taskId);
-      setTasks(tasks.filter((task) => task.id !== taskId));
+      await dispatch(deleteTaskThunk(taskId)).unwrap();
+      await dispatch(fetchTasks());
       setDeleteModalTaskId(null);
       showToast('Task deleted');
     } catch (error) {
@@ -205,29 +177,47 @@ export default function DashboardPage() {
 
   const handleMarkComplete = async (taskId: number) => {
     try {
-      const updated = await markTaskCompleted(taskId);
-      setTasks(tasks.map((t) => (t.id === taskId ? mapTaskResponse(updated) : t)));
+      await dispatch(markTaskCompletedThunk(taskId)).unwrap();
+      await dispatch(fetchTasks());
       showToast('Task marked as complete');
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'Failed to update task', 'error');
     }
   };
 
-  const handleRegisterAdmin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegisterAdmin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const newAdminData = Object.fromEntries(formData.entries());
 
-    console.log('Registering Admin:', newAdminData);
-    setTimeout(() => {
-      showToast(`Admin ${newAdminData.username} registered successfully!`);
+    if (!accessToken) {
+      showToast('Session expired. Please log in again.', 'error');
+      dispatch(logout());
+      router.push('/login');
+      return;
+    }
+
+    try {
+      setIsAdminSubmitting(true);
+      const payload = {
+        username: String(formData.get('username') || '').trim(),
+        email: String(formData.get('email') || '').trim(),
+        password: String(formData.get('password') || ''),
+        role: 'ADMIN' as const,
+      };
+
+      await registerAdmin(payload, accessToken);
+      await dispatch(fetchUsers());
+      showToast(`Admin ${payload.username} registered successfully!`);
       setIsAdminModalOpen(false);
-    }, 600);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to register admin', 'error');
+    } finally {
+      setIsAdminSubmitting(false);
+    }
   };
 
   const handleLogout = () => {
-    storage.clearUser();
-    storage.clearAccessToken();
+    dispatch(logout());
     router.push('/login');
   };
 
@@ -344,7 +334,7 @@ export default function DashboardPage() {
                 type="text"
                 placeholder="Search tasks..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                 className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
               />
             </div>
@@ -353,7 +343,10 @@ export default function DashboardPage() {
                 <Filter className="h-4 w-4 text-gray-500" />
                 <select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as Status | 'ALL')}
+                  onChange={(e) => {
+                    dispatch(setCurrentPage(1));
+                    dispatch(setStatusFilter(e.target.value as Status | 'ALL'));
+                  }}
                   className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                 >
                   <option value="ALL">All Statuses</option>
@@ -362,12 +355,31 @@ export default function DashboardPage() {
                   <option value="DONE">Done</option>
                 </select>
               </div>
+              <div className="flex items-center space-x-2">
+                <Filter className="h-4 w-4 text-gray-500" />
+                <select
+                  value={priorityFilter}
+                  onChange={(e) => {
+                    dispatch(setCurrentPage(1));
+                    dispatch(setPriorityFilter(e.target.value as Priority | 'ALL'));
+                  }}
+                  className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                >
+                  <option value="ALL">All Priorities</option>
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                </select>
+              </div>
               {user.role === 'ADMIN' && users.length > 0 && (
                 <div className="flex items-center space-x-2">
                   <UserIcon className="h-4 w-4 text-gray-500" />
                   <select
                     value={userFilter}
-                    onChange={(e) => setUserFilter(e.target.value === 'ALL' ? 'ALL' : Number(e.target.value))}
+                    onChange={(e) => {
+                      dispatch(setCurrentPage(1));
+                      dispatch(setUserFilter(e.target.value === 'ALL' ? 'ALL' : Number(e.target.value)));
+                    }}
                     className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                   >
                     <option value="ALL">All Users</option>
@@ -383,11 +395,28 @@ export default function DashboardPage() {
                 <ArrowDownUp className="h-4 w-4 text-gray-500" />
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as 'DUE_DATE' | 'PRIORITY')}
+                  onChange={(e) => {
+                    dispatch(setCurrentPage(1));
+                    dispatch(setSortBy(e.target.value as 'DUE_DATE' | 'PRIORITY'));
+                  }}
                   className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                 >
                   <option value="DUE_DATE">Sort by Date</option>
                   <option value="PRIORITY">Sort by Priority</option>
+                </select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <ArrowDownUp className="h-4 w-4 text-gray-500" />
+                <select
+                  value={sortDirection}
+                  onChange={(e) => {
+                    dispatch(setCurrentPage(1));
+                    dispatch(setSortDirection(e.target.value as 'asc' | 'desc'));
+                  }}
+                  className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                >
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
                 </select>
               </div>
             </div>
@@ -401,9 +430,9 @@ export default function DashboardPage() {
               <h3 className="text-lg font-medium text-gray-900 mb-1">Loading tasks...</h3>
               <p className="text-gray-500">Please wait while we fetch your tasks.</p>
             </div>
-          ) : filteredAndSortedTasks.length > 0 ? (
+          ) : filteredTasks.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredAndSortedTasks.map((task) => (
+              {filteredTasks.map((task) => (
                 <TaskCard
                   key={task.id}
                   task={task}
@@ -434,6 +463,44 @@ export default function DashboardPage() {
               </button>
             </div>
           )}
+
+          {!isLoading && (
+            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-sm text-gray-700">
+                Page {currentPage} of {totalPages} | Total tasks: {totalElements}
+              </div>
+              <div className="flex items-center gap-2">
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    dispatch(setCurrentPage(1));
+                    dispatch(setPageSize(Number(e.target.value)));
+                  }}
+                  className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                >
+                  <option value={5}>5 / page</option>
+                  <option value={10}>10 / page</option>
+                  <option value={20}>20 / page</option>
+                </select>
+                <button
+                  type="button"
+                  disabled={currentPage <= 1}
+                  onClick={() => dispatch(setCurrentPage(Math.max(currentPage - 1, 1)))}
+                  className="px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  disabled={currentPage >= totalPages}
+                  onClick={() => dispatch(setCurrentPage(Math.min(currentPage + 1, totalPages)))}
+                  className="px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </main>
 
         <TaskFormModal
@@ -450,6 +517,7 @@ export default function DashboardPage() {
           isOpen={isAdminModalOpen}
           onClose={() => setIsAdminModalOpen(false)}
           onSubmit={handleRegisterAdmin}
+          isSubmitting={isAdminSubmitting}
         />
 
         <DeleteConfirmModal

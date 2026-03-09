@@ -7,11 +7,13 @@ import { LayoutDashboard } from 'lucide-react';
 import AuthShell from '@/components/auth/AuthShell';
 import Toast from '@/components/ui/Toast';
 import { Role, ToastState } from '@/lib/types';
-import { storage } from '@/lib/storage';
 import { login } from '@/lib/Services/authentication_Services';
+import { useAppDispatch } from '@/store/hooks';
+import { setCredentials } from '@/store/slices/authSlice';
 
 export default function LoginPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [username, setUsername] = useState('TestUser');
   const [password, setPassword] = useState('password123');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,9 +39,11 @@ export default function LoginPage() {
         ? `${response.tokenType} ${response.token}`
         : `Bearer ${response.token}`;
 
-      storage.setUser({ username: response.username, role });
-      storage.setAccessToken(bearerToken);
-      storage.setTasks([]);
+      dispatch(setCredentials({
+        user: { username: response.username, role },
+        accessToken: bearerToken,
+      }));
+      
       setIsLoading(false);
       showToast(`Logged in as ${role}: ${response.username}`);
       setTimeout(() => router.push('/dashboard'), 400);

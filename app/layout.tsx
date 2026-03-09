@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ReduxProvider } from "@/store/ReduxProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,12 +28,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-          {children}
-          <footer className="border-t border-slate-200 py-4 text-center text-xs text-slate-500">
-            TaskFlow Ticketing System
-          </footer>
-        </div>
+        <ReduxProvider>
+          <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+            {children}
+            <footer className="border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+              TaskFlow Ticketing System
+            </footer>
+          </div>
+        </ReduxProvider>
       </body>
     </html>
   );
