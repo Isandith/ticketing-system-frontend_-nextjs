@@ -32,7 +32,7 @@ export default function RootLayout({
           <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
             {children}
             <footer className="border-t border-slate-200 py-4 text-center text-xs text-slate-500">
-              TaskFlow Ticketing System
+              TaskFlow System
             </footer>
           </div>
         </ReduxProvider>
