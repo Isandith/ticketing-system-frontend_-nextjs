@@ -339,38 +339,6 @@ export default function DashboardPage() {
               />
             </div>
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-              <div className="flex items-center space-x-2">
-                <Filter className="h-4 w-4 text-gray-500" />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => {
-                    dispatch(setCurrentPage(1));
-                    dispatch(setStatusFilter(e.target.value as Status | 'ALL'));
-                  }}
-                  className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
-                >
-                  <option value="ALL">All Statuses</option>
-                  <option value="TODO">To Do</option>
-                  <option value="IN_PROGRESS">In Progress</option>
-                  <option value="DONE">Done</option>
-                </select>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Filter className="h-4 w-4 text-gray-500" />
-                <select
-                  value={priorityFilter}
-                  onChange={(e) => {
-                    dispatch(setCurrentPage(1));
-                    dispatch(setPriorityFilter(e.target.value as Priority | 'ALL'));
-                  }}
-                  className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
-                >
-                  <option value="ALL">All Priorities</option>
-                  <option value="LOW">Low</option>
-                  <option value="MEDIUM">Medium</option>
-                  <option value="HIGH">High</option>
-                </select>
-              </div>
               {user.role === 'ADMIN' && users.length > 0 && (
                 <div className="flex items-center space-x-2">
                   <UserIcon className="h-4 w-4 text-gray-500" />
@@ -391,6 +359,38 @@ export default function DashboardPage() {
                   </select>
                 </div>
               )}
+              <div className="flex items-center space-x-2">
+                <Filter className="h-4 w-4 text-gray-500" />
+                <select
+                  value={priorityFilter}
+                  onChange={(e) => {
+                    dispatch(setCurrentPage(1));
+                    dispatch(setPriorityFilter(e.target.value as Priority | 'ALL'));
+                  }}
+                  className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                >
+                  <option value="ALL">All Priorities</option>
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                </select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Filter className="h-4 w-4 text-gray-500" />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => {
+                    dispatch(setCurrentPage(1));
+                    dispatch(setStatusFilter(e.target.value as Status | 'ALL'));
+                  }}
+                  className="border border-gray-300 rounded-lg text-sm py-2 px-3 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                >
+                  <option value="ALL">All Statuses</option>
+                  <option value="TODO">To Do</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="DONE">Done</option>
+                </select>
+              </div>
               <div className="flex items-center space-x-2">
                 <ArrowDownUp className="h-4 w-4 text-gray-500" />
                 <select
