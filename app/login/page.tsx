@@ -17,8 +17,8 @@ import { setCredentials } from '@/store/slices/authSlice';
 export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [username, setUsername] = useState('TestUser');
-  const [password, setPassword] = useState('password123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 

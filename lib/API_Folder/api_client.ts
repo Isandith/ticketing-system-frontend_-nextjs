@@ -26,6 +26,21 @@ apiClient.interceptors.request.use((config) => {
 	return config;
 });
 
+apiClient.interceptors.response.use(
+	(response) => response,
+	(error) => {
+		if (axios.isAxiosError(error) && error.response?.status === 401 && typeof window !== 'undefined') {
+			storage.clearUser();
+			const currentPath = window.location.pathname;
+			if (currentPath !== '/login' && currentPath !== '/register') {
+				window.location.replace('/login');
+			}
+		}
+
+		return Promise.reject(error);
+	},
+);
+
 /**
  * Maps unknown API errors into a normalized Error instance for UI handling.
  */

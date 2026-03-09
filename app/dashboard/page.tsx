@@ -54,6 +54,7 @@ export default function DashboardPage() {
     tasks,
     users,
     isLoading,
+    error,
     currentPage,
     pageSize,
     totalPages,
@@ -444,6 +445,20 @@ export default function DashboardPage() {
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-1">Loading tasks...</h3>
               <p className="text-gray-500">Please wait while we fetch your tasks.</p>
+            </div>
+          ) : error ? (
+            <div className="bg-white border border-red-200 rounded-xl p-12 text-center">
+              <div className="mx-auto w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle2 className="h-8 w-8 text-red-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">Failed to load tasks</h3>
+              <p className="text-red-600 mb-4">{error}</p>
+              <button
+                onClick={() => dispatch(fetchTasks())}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm"
+              >
+                Retry
+              </button>
             </div>
           ) : filteredTasks.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
