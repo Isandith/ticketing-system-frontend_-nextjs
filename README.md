@@ -28,7 +28,7 @@ Implemented capabilities:
 
 ## Environment Variables
 
-Create `.env.local` in the frontend root:
+Create `.env` in the frontend root:
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
@@ -52,8 +52,10 @@ npm install
 2. Configure environment:
 
 ```bash
-# create .env.local manually and add NEXT_PUBLIC_API_BASE_URL
+# create .env manually and add NEXT_PUBLIC_API_BASE_URL
 ```
+
+You can also use `.env.local` if preferred; both are supported by Next.js.
 
 3. Start the development server:
 
