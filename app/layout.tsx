@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
  * Global application metadata used for document title and description.
  */
 export const metadata: Metadata = {
-  title: "Ticketing System",
-  description: "Mini task and ticket management frontend",
+  title: "Task Manager Frontend",
+  description: "Mini task management frontend",
 };
 
 /**
