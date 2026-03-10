@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { UserPlus } from 'lucide-react';
@@ -8,17 +8,29 @@ import AuthShell from '@/components/auth/AuthShell';
 import Toast from '@/components/ui/Toast';
 import { ToastState } from '@/lib/types';
 import { register } from '@/lib/Services/authentication_Services';
+import { useAppSelector } from '@/store/hooks';
 
 /**
  * Registration page for creating a new user account.
  */
 export default function RegisterPage() {
   const router = useRouter();
+  const { isAuthenticated, isHydrated } = useAppSelector((state) => state.auth);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
+    if (isAuthenticated) {
+      router.replace('/dashboard');
+    }
+  }, [isAuthenticated, isHydrated, router]);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });

@@ -6,12 +6,14 @@ interface AuthState {
   user: User | null;
   accessToken: string | null;
   isAuthenticated: boolean;
+  isHydrated: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
   accessToken: null,
   isAuthenticated: false,
+  isHydrated: false,
 };
 
 const authSlice = createSlice({
@@ -22,6 +24,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
       state.isAuthenticated = true;
+      state.isHydrated = true;
       storage.setUser(action.payload.user);
       storage.setAccessToken(action.payload.accessToken);
     },
@@ -29,6 +32,7 @@ const authSlice = createSlice({
       state.user = null;
       state.accessToken = null;
       state.isAuthenticated = false;
+      state.isHydrated = true;
       storage.clearUser();
       storage.clearAccessToken();
     },
@@ -40,6 +44,7 @@ const authSlice = createSlice({
         state.accessToken = storedToken;
         state.isAuthenticated = true;
       }
+      state.isHydrated = true;
     },
   },
 });

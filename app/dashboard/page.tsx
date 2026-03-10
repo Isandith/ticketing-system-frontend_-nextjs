@@ -49,7 +49,7 @@ export default function DashboardPage() {
   const dispatch = useAppDispatch();
   
   // Redux state
-  const { user, isAuthenticated, accessToken } = useAppSelector((state) => state.auth);
+  const { user, isAuthenticated, accessToken, isHydrated } = useAppSelector((state) => state.auth);
   const {
     tasks,
     users,
@@ -87,6 +87,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!mounted) return;
+    if (!isHydrated) return;
     
     if (!isAuthenticated || !user) {
       router.replace('/login');
@@ -105,6 +106,7 @@ export default function DashboardPage() {
     router,
     user,
     isAuthenticated,
+    isHydrated,
     mounted,
     currentPage,
     pageSize,
@@ -226,7 +228,7 @@ export default function DashboardPage() {
   };
 
   // Prevent hydration mismatch by only rendering after client-side mount
-  if (!mounted) {
+  if (!mounted || !isHydrated) {
     return null;
   }
 

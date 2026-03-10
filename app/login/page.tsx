@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LayoutDashboard } from 'lucide-react';
@@ -9,6 +9,7 @@ import Toast from '@/components/ui/Toast';
 import { Role, ToastState } from '@/lib/types';
 import { login } from '@/lib/Services/authentication_Services';
 import { useAppDispatch } from '@/store/hooks';
+import { useAppSelector } from '@/store/hooks';
 import { setCredentials } from '@/store/slices/authSlice';
 
 /**
@@ -17,10 +18,21 @@ import { setCredentials } from '@/store/slices/authSlice';
 export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { isAuthenticated, isHydrated } = useAppSelector((state) => state.auth);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
+    if (isAuthenticated) {
+      router.replace('/dashboard');
+    }
+  }, [isAuthenticated, isHydrated, router]);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
